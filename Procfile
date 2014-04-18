@@ -1,1 +1,1 @@
-web: bin/python bin/twistd -n web
+web: bin/twistd -n web
