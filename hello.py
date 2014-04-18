@@ -1,5 +1,5 @@
 import os
-from twisted.web import server, resource
+
 from twisted.internet import reactor
 from flask import Flask
 
