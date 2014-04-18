@@ -1,1 +1,1 @@
-web: bin/twistd -n web
+worker: python hello.py
