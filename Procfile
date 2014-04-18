@@ -1,1 +1,1 @@
-web: gunicorn hello:app
+web: bin/python bin/twistd -n web
