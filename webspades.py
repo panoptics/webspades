@@ -1,11 +1,9 @@
-import os
 from twisted.web import static, server, resource
 #from autobahn.twisted.choosereactor import install_reactor
 
 from autobahn.twisted.websocket import WebSocketServerFactory,WebSocketServerProtocol
 #reactor = install_reactor()
 #print("Running on reactor {}".format(reactor))
-port= (os.environ.get('PORT', 8080))
 
 class WebSpadesProtocol(WebSocketServerProtocol):
     isLeaf = True
@@ -23,7 +21,7 @@ class WebSpadesProtocol(WebSocketServerProtocol):
     def render_GET(self, request):
         self.numberRequests += 1
         request.setHeader("content-type", "text/plain")
-        return "I am request #" + str(self.numberRequests) + "port" + str(port) +  "\n"
+        return "I am request #" + str(self.port) + "\n"
 
 class WebSpadesServerFactory(WebSocketServerFactory):
     protocol = WebSpadesProtocol
