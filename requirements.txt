@@ -4,6 +4,7 @@ Jinja2==2.7.2
 MarkupSafe==0.21
 Twisted==13.2.0
 Werkzeug==0.9.4
+autobahn==0.8.8
 distribute==0.6.34
 gevent==0.13.8
 gevent-websocket==0.3.6
