@@ -1,1 +1,1 @@
-web: twistd -n web --port $PORT --wsgi hello.app
+web: twistd -ny service.tac
