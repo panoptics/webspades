@@ -1,14 +1,8 @@
-import sys
 import os
-"""import gevent"""
+port = os.environ['PORT']
 
-PO  = os.environ['PORT']
-port = int(sys.argv[-1])
-
-from twisted.internet import reactor
 from twisted.web import server, resource
-from twisted.web.server import Site, NOT_DONE_YET
-from twisted.internet.threads import deferToThread
+from twisted.internet import reactor
 
 class HelloResource(resource.Resource):
     isLeaf = True
