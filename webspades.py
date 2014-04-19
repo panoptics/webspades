@@ -1,3 +1,4 @@
+import os
 from twisted.web import static, server, resource
 #from autobahn.twisted.choosereactor import install_reactor
 
@@ -5,10 +6,19 @@ from autobahn.twisted.websocket import WebSocketServerFactory,WebSocketServerPro
 #reactor = install_reactor()
 #print("Running on reactor {}".format(reactor))
 
+
 class WebSpadesProtocol(WebSocketServerProtocol):
     isLeaf = True
     numberRequests = 0
     app = 0
+
+    def onConnect(self, request):
+	wsport= (os.environ.get('PORT', 8080))
+        print("Client connect on port:"+str(wsport) )
+    
+    def onOpen(self):
+        print("WebSocket connection open.")
+   
     def setServiceParent(application):
 	self.app = application
 

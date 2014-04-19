@@ -15,12 +15,18 @@ def getWebService():
     #return internet.TCPServer(port, server.Site(HelloResource()) )
     #reactor = install_reactor()
     print("Running on reactor {}".format(reactor))
+    webSpadesService = service.MultiService()
+    fileServer = server.Site(static.File(os.getcwd()))
+
+    internet.TCPServer(port, fileServer).setServiceParent(webSpadesService)
+
     wsfactory = WebSpadesServerFactory()
-    wsserver = serverFromString(reactor, "tcp:"+str(port))
-    return wsserver.listen(wsfactory)
+    wsserver = serverFromString(reactor, "tcp:"+str(8081))
+    wsserver.listen(wsfactory)
+    return webSpadesService
 
 application = service.Application("webspades")
 
 # attach the service to its parent application
 service = getWebService()
-#service.setServiceParent(application)
+service.setServiceParent(application)
