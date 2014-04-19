@@ -23,7 +23,7 @@ class WebSpadesProtocol(WebSocketServerProtocol):
     def render_GET(self, request):
         self.numberRequests += 1
         request.setHeader("content-type", "text/plain")
-        return "I am request #" + str(self.numberRequests) + str(port) +  "\n"
+        return "I am request #" + str(self.numberRequests) + "port" + str(port) +  "\n"
 
 class WebSpadesServerFactory(WebSocketServerFactory):
     protocol = WebSpadesProtocol
