@@ -1,1 +1,1 @@
-web: python hello.py
+web: bin/python hello.py $PORT
