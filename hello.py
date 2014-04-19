@@ -3,8 +3,10 @@ import os
 
 PO  = os.environ['PORT']
 
-from twisted.web import server, resource
 from twisted.internet import reactor
+from twisted.web.resource import Resource
+from twisted.web.server import Site, NOT_DONE_YET
+from twisted.internet.threads import deferToThread
 
 class HelloResource(resource.Resource):
     isLeaf = True
