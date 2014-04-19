@@ -1,1 +1,1 @@
-web: gunicorn hello:app
+web: twistd -n web --port $PORT --wsgi hello.app
