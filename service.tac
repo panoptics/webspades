@@ -12,9 +12,19 @@ which twistd will look for
 """
 
 import os
+from twisted.internet import protocol
 from twisted.application import service, internet
-from twisted.web import static, server
+from twisted.web import static, server, resource
 port= int(os.environ.get('PORT', 8080))
+
+class HelloResource(resource.Resource):
+    isLeaf = True
+    numberRequests = 0
+    
+    def render_GET(self, request):
+        self.numberRequests += 1
+        request.setHeader("content-type", "text/plain")
+        return "I am request #" + str(self.numberRequests) + "\n"
 
 def getWebService():
     """
@@ -25,8 +35,7 @@ from
     underneath the current working directory.
     """
     # create a resource to serve static files
-    fileServer = server.Site(static.File(os.getcwd()))
-    return internet.TCPServer(port, fileServer)
+    return internet.TCPServer(port, server.Site(HelloResource()) )
 
 # this is the core part of any tac file, the creation of the root-level
 # application object
