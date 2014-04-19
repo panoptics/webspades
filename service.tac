@@ -1,46 +1,26 @@
-# You can run this .tac file directly with:
-#    twistd -ny service.tac
-
-"""
-This is an example .tac file which starts a webserver on port 8080 and
-serves files from the current working directory.
-
-The important part of this, the part that makes it a .tac file, is
-the final root-level section, which sets up the object called 
-'application'
-which twistd will look for
-"""
-
 import os
-from twisted.internet import protocol
+
+from twisted.internet import protocol, reactor
 from twisted.application import service, internet
 from twisted.web import static, server, resource
-port= int(os.environ.get('PORT', 8080))
+from webspades import WebSpadesServerFactory
+from twisted.internet.endpoints import serverFromString
+from autobahn.twisted.choosereactor import install_reactor
+from autobahn.twisted.websocket import WebSocketClientFactory, \
+                                       WebSocketClientProtocol
 
-class HelloResource(resource.Resource):
-    isLeaf = True
-    numberRequests = 0
-    
-    def render_GET(self, request):
-        self.numberRequests += 1
-        request.setHeader("content-type", "text/plain")
-        return "I am request #" + str(self.numberRequests) + "\n"
+port= (os.environ.get('PORT', 8080))
 
 def getWebService():
-    """
-    Return a service suitable for creating an application object.
+    #return internet.TCPServer(port, server.Site(HelloResource()) )
+    #reactor = install_reactor()
+    print("Running on reactor {}".format(reactor))
+    wsfactory = WebSpadesServerFactory()
+    wsserver = serverFromString(reactor, "tcp:"+str(port))
+    return wsserver.listen(wsfactory)
 
-    This service is a simple web server that serves files on port 8080 
-from
-    underneath the current working directory.
-    """
-    # create a resource to serve static files
-    return internet.TCPServer(port, server.Site(HelloResource()) )
-
-# this is the core part of any tac file, the creation of the root-level
-# application object
-application = service.Application("Demo application")
+application = service.Application("webspades")
 
 # attach the service to its parent application
 service = getWebService()
-service.setServiceParent(application)
+#service.setServiceParent(application)
