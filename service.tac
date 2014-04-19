@@ -20,7 +20,7 @@ def getWebService():
     #internet.TCPServer(port, fileServer).setServiceParent(webSpadesService)
 
     wsfactory = WebSpadesServerFactory()
-    wsserver = serverFromString(reactor, "tcp:"+str(8081))
+    wsserver = serverFromString(reactor, "tcp:"+str(port))
     return wsserver.listen(wsfactory)
     #return webSpadesService
 
