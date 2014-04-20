@@ -83,7 +83,7 @@ perf_counter.use_raw_monotonic = (perf_counter.use_monotonic == False)
 
 
 def getWebService():
-    #reactor = install_reactor()
+    reactor = install_reactor()
     #print("Running on reactor {}".format(reactor))
 
     factory1 = WebSpadesServerFactory("ws://localhost:" + str(port),
