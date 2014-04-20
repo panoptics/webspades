@@ -22,7 +22,7 @@ port= (os.environ.get('PORT', 8080))
 
 
 def getWebService():
-    reactor = install_reactor()
+    #reactor = install_reactor()
     #print("Running on reactor {}".format(reactor))
 
     factory1 = WebSpadesServerFactory("ws://localhost:" + str(port),
@@ -38,8 +38,8 @@ def getWebService():
     server = reactor.listenTCP(port, site)
     #reactor.seconds = perf_counter
     factory1.protocol.reactor = reactor
-    sim = Simulation(reactor, factory1.protocol, server)
-    sim.start(1.0)
+    #sim = Simulation(reactor, factory1.protocol, server)
+    #sim.start(1.0)
     return server
 
 application = service.Application("webspades")
