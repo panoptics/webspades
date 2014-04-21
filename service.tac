@@ -85,7 +85,7 @@ def getWebService():
     #reactor = install_reactor()
     #print("Running on reactor {}".format(reactor))
 
-    factory1 = WebSpadesServerFactory("ws://localhost:" + str(port),
+    factory1 = WebSpadesServerFactory("wss://localhost:" + str(port),
                                      debug = False,
                                      debugCodePaths = False)
 
