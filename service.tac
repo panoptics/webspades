@@ -94,6 +94,7 @@ def getWebService():
 
     root = File("./htdocs/")
     root.putChild("ws", resource1)
+    root = resource1
     site = Site(root)
     server = reactor.listenTCP(port, site)
     reactor.seconds = perf_counter
