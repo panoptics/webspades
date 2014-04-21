@@ -3,7 +3,7 @@ var connection = null;
 if ('WebSocket' in window){
    /* WebSocket is supported. You can proceed with your code*/
 //sheltered-meadow-7230.herokuapp.com:
-	connection = new WebSocket('wss://sheltered-meadow-7230.herokuapp.com:80/ws');
+	connection = new WebSocket('ws://sheltered-meadow-7230.herokuapp.com:80/ws',["pi","po"]);
    connection.binaryType = "arraybuffer";
 } else {
 }
