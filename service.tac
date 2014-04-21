@@ -1,7 +1,7 @@
 """ sim runs independantly of network """
 __all__ = ["perf_counter"]
 
-import ctypes, os, time
+import ctypes, os, time, sys
 
 from twisted.web import server, resource
 from twisted.web.server import Site
@@ -17,6 +17,8 @@ from autobahn.twisted.websocket import WebSocketServerFactory, \
 from autobahn.twisted.resource import WebSocketResource
 from webspades import WebSpadesServerFactory,WebSpadesProtocol
 from simulation import Simulation
+from livecoding import reloader, namespace
+from core.connection import conn
 
 port= int(os.environ.get('PORT', 8080))
 
@@ -27,11 +29,11 @@ class timespec(ctypes.Structure):
         ('tv_sec', ctypes.c_long),
         ('tv_nsec', ctypes.c_long)
     ]
+
 if os.name == 'posix':
     librt = ctypes.CDLL('librt.so.1', use_errno=True)
-
-clock_gettime = librt.clock_gettime
-clock_gettime.argtypes = [ctypes.c_int, ctypes.POINTER(timespec)]
+    clock_gettime = librt.clock_gettime
+    clock_gettime.argtypes = [ctypes.c_int, ctypes.POINTER(timespec)]
 
 
 if os.name == 'nt':
@@ -80,25 +82,26 @@ perf_counter.use_monotonic = hasattr(time, 'monotonic')
 perf_counter.use_raw_monotonic = (perf_counter.use_monotonic == False)
 
 
-
 def getWebService():
     #reactor = install_reactor()
     #print("Running on reactor {}".format(reactor))
-
     factory1 = WebSpadesServerFactory("ws://localhost:" + str(port),
                                      debug = False,
                                      debugCodePaths = False)
-
     resource1 = WebSocketResource(factory1)
     
 
-    #root = File("./htdocs/")
-    #root.putChild("ws", resource1)
-    root = resource1
+
+    root = File("./htdocs/")
+    root.putChild("ws", resource1)
     site = Site(root)
     server = reactor.listenTCP(port, site)
     reactor.seconds = perf_counter
     factory1.protocol.reactor = reactor
+
+    conn.setConnection(reactor, factory1.protocol, server)
+    factory1.protocol.onConnectCallback  = conn.onConnectCallback
+    factory1.protocol.onDisConnectCallback = conn.onDisConnectCallback
     sim = Simulation(reactor, factory1.protocol, server)
     sim.start(1.0)
     return server
@@ -111,3 +114,51 @@ application = service.Application("webspades")
 # attach the service to its parent application
 service = getWebService()
 #service.setServiceParent(application)
+
+
+def loadScripts():
+    print("load scripts")
+    script_objects = []
+    script_names = ["run"]
+    modules = []
+    for script in script_names[:]:
+        try:
+            module = __import__('scripts.%s' % script, globals(), locals(), 
+                [script])
+            script_objects.append(module)
+        except ImportError, e:
+            print "(script '%s' not found: %r)" % (script, e)
+            script_names.remove(script)
+
+    for script in script_objects:
+        if "apply_script" in dir(script):
+            script.apply_script()
+        else:
+            script_objects.remove(script)
+
+#loadScripts()
+
+
+def GetCurrentDirectory():
+    # There's probably a better way of doing this.
+    dirPath = os.path.dirname(__file__)
+    if not len(dirPath):
+        dirPath = sys.path[0]
+    return dirPath
+
+def GetScriptDirectory():
+    parentDirPath = GetCurrentDirectory()
+    return os.path.join((parentDirPath), "scripts")
+scriptnum =0 
+scriptDirPath = GetScriptDirectory()
+
+def callB(cb):
+    if "moduleRealName" in dir(cb):
+        print("REAL:" + cb.moduleRealName)
+
+
+
+cr = reloader.CodeReloader(mode=reloader.MODE_OVERWRITE )
+
+
+scriptDirectory = cr.AddDirectory("scripts", scriptDirPath)

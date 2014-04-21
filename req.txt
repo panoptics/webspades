@@ -1,0 +1,16 @@
+Flask==0.10.1
+Flask-Sockets==0.1
+Jinja2==2.7.2
+MarkupSafe==0.21
+Twisted==13.2.0
+Werkzeug==0.9.4
+autobahn==0.8.8
+gevent==1.0
+gevent-websocket==0.9.3
+greenlet==0.4.2
+gunicorn==18.0
+itsdangerous==0.24
+six==1.6.1
+websocket==0.2.1
+wsgiref==0.1.2
+zope.interface==4.1.1
