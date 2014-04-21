@@ -92,8 +92,8 @@ def getWebService():
     resource1 = WebSocketResource(factory1)
     
 
-    root = File("./htdocs/")
-    root.putChild("ws", resource1)
+    #root = File("./htdocs/")
+    #root.putChild("ws", resource1)
     root = resource1
     site = Site(root)
     server = reactor.listenTCP(port, site)
