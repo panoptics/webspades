@@ -18,7 +18,7 @@ from autobahn.twisted.resource import WebSocketResource
 from webspades import WebSpadesServerFactory,WebSpadesProtocol
 from simulation import Simulation
 from livecoding import reloader, namespace
-from core.connection import conn
+from core.connection import conn, Register
 
 port= int(os.environ.get('PORT', 8080))
 
@@ -152,12 +152,7 @@ def GetScriptDirectory():
 scriptnum =0 
 scriptDirPath = GetScriptDirectory()
 
-def callB(cb):
-    if "moduleRealName" in dir(cb):
-        print("REAL:" + cb.moduleRealName)
-
-
-
+global Register
 cr = reloader.CodeReloader(mode=reloader.MODE_OVERWRITE )
 
 

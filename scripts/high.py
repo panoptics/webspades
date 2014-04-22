@@ -1,15 +1,14 @@
-
 from core.basescript import BaseScript
 
-class MidClass(BaseScript):
+class HighClass(BaseScript):
     value = 0
-   # __metaclass__ = Singleton
+
     def __init__(self):
         self.value =1
-        BaseScript.__init__(self)
+        BaseScript.__init__(self) 
 
     def fill(self, other):
-        print "mid yum"
+        print "High yum"
         self.value= other.value +1
-
-mid = MidClass()            
+         
+high = HighClass() 

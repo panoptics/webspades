@@ -1,9 +1,9 @@
 
 from core.basescript import BaseScript
 
-class MidClass(BaseScript):
+class BottomClass(BaseScript):
     value = 0
-   # __metaclass__ = Singleton
+    # __metaclass__ = Singleton
     def __init__(self):
         self.value =1
         BaseScript.__init__(self)
@@ -12,4 +12,4 @@ class MidClass(BaseScript):
         print "mid yum"
         self.value= other.value +1
 
-mid = MidClass()            
+bot = BottomClass()            
