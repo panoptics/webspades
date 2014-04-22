@@ -2,41 +2,52 @@
 """ sim runs independantly of network """
 
 
-import os, time, math
+import os, time, math, weakref
 
 from twisted.internet import task
 from autobahn.twisted.choosereactor import install_reactor
 from sets import Set
+
+
+
 
 class BaseSimulation():
     reactor  = None
     protocol = None
     server   = None
     paused   = True
+    conn     = None
     loop     = None
     freq     = 0.0
     pertick  = 4 
     simulants= Set()
+    entities = weakref.WeakValueDictionary()
 
-    def __init__(self, reactor, protocol, server, freq = 0.2 ):
+    def setConnection(self, reactor, protocol, server, conn):
+        self.reactor = reactor
+        self.protocol = protocol
+        self.server = server
+        self.conn = conn
+    def __init__(self, reactor, protocol, server, conn, freq = 0.2 ):
         self.reactor = reactor
         self.protocol = protocol
         self.server = server
         self.tticks =0
         self.freq = freq
+        self.conn = conn
 
     def op(self, sctime =0.0):
         print( self.reactor.seconds())
-        return
+        self.conn.update()
+        for c in self.entities:
+            self.entities[c].doTick()
 
     def tick(self):
         inter = 1.0/float(self.pertick)
         ntime = math.floor(self.reactor.seconds())
         for x in range(1,self.pertick+1):
             self.reactor.callLater(ntime-self.reactor.seconds()+(float(x)*inter), self.op)
-
         self.tticks+=1
-        
 
     def enactSim(self):
         self.loop = task.LoopingCall(self.tick)
@@ -50,7 +61,16 @@ class BaseSimulation():
         if self.loop == None:
             ntime = math.floor(self.reactor.seconds())
             self.reactor.callLater(ntime-self.reactor.seconds()+1.0, self.enactSim )
+    
+    def registerEntity(self, other):
+        if other.id in self.entities:
+            del self.entities[other.id]
+        self.entities[other.id] = other
 
+    def registerScriptEntity(self, other):
+        other.reactor = self.reactor
+        other.protocol= self.protocol
+        other.server  = self.server
 
     def stop(self):
     	self.loop.stop()
@@ -68,5 +88,7 @@ class Simulation(BaseSimulation):
     server   = None
     paused   = True
 
-    def __init__(self, reactor, protocol, server, freq = 0.2 ):
-        BaseSimulation.__init__(self, reactor, protocol, server, freq)
+    def __init__(self, reactor, protocol, server, conn, freq = 0.2 ):
+        BaseSimulation.__init__(self, reactor, protocol, server, conn, freq)
+
+sim = Simulation( reactor = None, protocol= None, server= None, conn = None)

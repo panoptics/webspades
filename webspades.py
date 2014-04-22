@@ -27,6 +27,9 @@ class WebSpadesProtocol(WebSocketServerProtocol):
     onDisConnectCallback = None
     pingtime = 0
     messages = collections.deque()
+    id = "WebSpadesProtocol"
+    def doTick(self):
+        print self.id
     def encodeMessage(self, message):
         return utf_8_encode(unicode(message, 'latin-1'))[0]  
 

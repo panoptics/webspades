@@ -21,8 +21,10 @@ class ScriptFile(object):
     lastError = None
     namespaceContributions = None
 
-    def __init__(self, filePath, namespacePath, implicitLoad=True, delGlobals=False):
+    def __init__(self, filePath, namespacePath, className = None, implicitLoad=True, delGlobals=False):
         self.filePath = filePath
+        self.className = className
+        
         self.namespacePath = namespacePath
 
         self.scriptGlobals = {}
@@ -37,7 +39,7 @@ class ScriptFile(object):
         # print "GC", self.namespacePath, self.filePath, hex(id(self.scriptGlobals))
 
     def __repr__(self):
-        return "<ScriptFile filePath='%s' namespacePath='%s'>" % (self.filePath, self.namespacePath)
+        return "<ScriptFile filePath='%s' namespacePath='%s' moduleName='%s'>" % (self.filePath, self.namespacePath, self.className)
 
     def Load(self, filePath):
         self.filePath = filePath
@@ -392,7 +394,7 @@ class ScriptDirectory(object):
 
     def SetModuleAttributes(self, scriptFile, namespace, overwritableAttributes=set()):
         moduleName = namespace.__name__
-       
+
         # Track what files have contributed to the namespace.
         if scriptFile.filePath not in namespace.__file__:
             if len(namespace.__file__):

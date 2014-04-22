@@ -80,6 +80,7 @@ class CodeReloader:
             handler.SetClassCreationCallback(self.classCreationCallback)
 
     def SetValidateScriptCallback(self, ob):
+
         if type(ob) is types.MethodType:
             self.validateScriptCallback = (weakref.proxy(ob.im_self), ob.func_name)
         elif type(ob) is types.FunctionType:
@@ -182,7 +183,7 @@ class CodeReloader:
         newScriptFile = self.CreateNewScript(oldScriptFile)
         if newScriptFile is None:
             return False
-
+        newScriptFile.className = "sd"
         self.UseNewScript(oldScriptFile, newScriptFile)
         return True
 
@@ -205,6 +206,7 @@ class CodeReloader:
             # attributes provided by each are compatible.
             if self.ScriptCompatibilityCheck(oldScriptFile, newScriptFile):
                 newScriptFile.version = oldScriptFile.version + 1
+
                 return newScriptFile
         else:
             # The execution failed, log context for the programmer to examine.
@@ -217,7 +219,8 @@ class CodeReloader:
 
         filePath = newScriptFile.filePath
         namespacePath = newScriptFile.namespacePath
-        
+
+
         # The new version of the script being returned, means that it is
         # has been checked and approved for use.
         scriptDirectory = self.FindDirectory(filePath)
@@ -232,7 +235,7 @@ class CodeReloader:
         if self.mode == MODE_OVERWRITE:
             scriptDirectory.UnregisterScript(oldScriptFile)
             scriptDirectory.RegisterScript(newScriptFile)
-
+            
             scriptDirectory.SetModuleAttributes(newScriptFile, namespace, overwritableAttributes=self.namespaceLeaks)
 
             # Remove as leaks the attributes the new version contributed.
@@ -252,7 +255,7 @@ class CodeReloader:
 
         moduleName = namespace.__name__
         filePath = newScriptFile.filePath
-        newScriptFile.moduleRealName = moduleName
+        newScriptFile.moduleName = moduleName
         # Track what files have contributed to the namespace.
         if filePath not in namespace.__file__:
             logger.error("On an update, a script file's path is expected to have already been registered")
@@ -329,7 +332,7 @@ class CodeReloader:
 
         scriptFile.AddNamespaceContributions(namespaceContributions)
         newScriptFile.SetNamespaceContributions(namespaceContributions)
-       
+
 
     def UpdateClass(self, scriptFile, value, newValue, globals_):
         logger.debug("Updating class %s:%s from %s:%s", value, hex(id(value)), newValue, hex(id(newValue)))

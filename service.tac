@@ -16,7 +16,7 @@ from autobahn.twisted.websocket import WebSocketServerFactory, \
                                        WebSocketServerProtocol
 from autobahn.twisted.resource import WebSocketResource
 from webspades import WebSpadesServerFactory,WebSpadesProtocol
-from simulation import Simulation
+from simulation import sim
 from livecoding import reloader, namespace
 from core.connection import conn, Register
 
@@ -100,9 +100,8 @@ def getWebService():
     factory1.protocol.reactor = reactor
 
     conn.setConnection(reactor, factory1.protocol, server)
-    factory1.protocol.onConnectCallback  = conn.onConnectCallback
-    factory1.protocol.onDisConnectCallback = conn.onDisConnectCallback
-    sim = Simulation(reactor, factory1.protocol, server)
+    sim.setConnection(reactor, factory1.protocol, server, conn)
+
     sim.start(1.0)
     return server
 
@@ -153,7 +152,7 @@ scriptnum =0
 scriptDirPath = GetScriptDirectory()
 
 global Register
-cr = reloader.CodeReloader(mode=reloader.MODE_OVERWRITE )
+cr = reloader.CodeReloader(mode=reloader.MODE_OVERWRITE, callback=conn.CB )
 
 
 scriptDirectory = cr.AddDirectory("scripts", scriptDirPath)

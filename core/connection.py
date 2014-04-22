@@ -32,28 +32,33 @@ class BaseConnection():
         self.protocol = protocol
         self.server = server
 
-
+    def CB(self, caller):
+        print caller
+        pass
 
     def onConnectCallback(self, client):
-        for i in getListInstance(self.connections, lambda x: isinstance(x, client.__class__ )):
-            client.fill(i)
 
-        if str(client.__class__) in self.connections:
-            client.fill(self.connections[str(client.__class__)])
-            del self.connections[str(client.__class__)] 
-        self.connections[str(client.__class__)] = client
-        print client.value
-        print self.connections
+        if client.id in self.connections:
+            del self.connections[client.id]
+
+        self.connections[client.id] = client
+        client.reactor = self.reactor
+        client.protocol= self.protocol
+        client.server = self.server
         print("onConnectCallback")
 
+    def update(self):
+        for c in self.connections:
+            self.connections[c].doTick()
+
     def onDisConnectCallback(self, client):
-        self.connections.remove((client))
-        del client
-        print self.connections
+        print "REMOVE CLIENT"
+        del self.connections[client.id]
         print("onDisConnectCallback")
 
-    def register(other):
-        conn.onConnectCallback(other)
+    def register(self, other):
+        self.onConnectCallback(other)
+        
 class Connection(BaseConnection):
     def __init__(self, reactor, protocol, server):
         BaseConnection.__init__(self, reactor, protocol, server)
@@ -61,4 +66,4 @@ class Connection(BaseConnection):
 conn = Connection( reactor = None, protocol= None, server= None)
 
 def Register(other):
-    conn.onConnectCallback(other)
+    conn.register(other)

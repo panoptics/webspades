@@ -2,14 +2,11 @@
 from core.basescript import BaseScript
 
 class MidClass(BaseScript):
-    value = 0
-   # __metaclass__ = Singleton
-    def __init__(self):
-        self.value =1
-        BaseScript.__init__(self)
+    def __init__(self, id):
+        BaseScript.__init__(self, id)
 
-    def fill(self, other):
-        print "mid yum"
-        self.value= other.value +1
 
-mid = MidClass()            
+
+
+
+mid = MidClass("MIDCLASS")            
