@@ -3,32 +3,114 @@ var connection = null;
 if ('WebSocket' in window){
    /* WebSocket is supported. You can proceed with your code*/
 //sheltered-meadow-7230.herokuapp.com:
-	connection = new WebSocket('ws://localhost:8080/ws',["pi","po"]);
+	connection = new WebSocket('ws://192.168.0.6:8080/ws',["pi","po"]);
    connection.binaryType = "arraybuffer";
 } else {
 }
-connection.onmessage = function(e){
-   if (typeof e.data == "string") {
-      console.log("Text message received: " + e.data);
-   } else {
-      var arr = new Uint8Array(e.data);
-      var hex = '';
-      for (var i = 0; i < arr.length; i++) {
-         hex += ( arr[i].toString(8) ).substr(-1);
-      }
-      console.log("Binary message (" +arr.length+") received: " + decodeURIComponent(escape(hex)) );
-
-      connection.send(e.data);
+zzencode = function(n){
+   return (n << 1) ^ (n >> 31);
+}
+zzdecode = function(n){
+   return ((n >> 1) ^ (-(n & 1)));
+}
+decodezzstring = function(e){
+   var arr = new Uint8Array(e.data);
+   var hex='';
+   for (var i = 0; i < arr.length && i<2048; i++) {
+      hex += String.fromCharCode(zzdecode(arr[i]));
    }
+   return hex;
+}
+encodezzstring = function(a){
+   var hex='';
+   for (var i = 0; i < a.length && i<2048; i++) {
+      hex += (zzencode(a[i]));
+   }
+   return hex;
+}
+$ = function(id){
+   return document.getElementById(id);
+}
+$C = function(id){
+   return document.createElement(id);
+}
+$CT = function(id){
+   return document.createTextNode(id);
+}
+notify = function(txt){
+   var txtNode = $CT(txt);
+   var br = $C('br');
+   var mdiv = $('messages');
+   mdiv.appendChild(txtNode);
+   mdiv.appendChild(br);
+}
+dologin = function(message){
+   if ( message.pass && message.user ){
 
+      var jsms = JSON.stringify(message);
+      var utf8ms = encodeURIComponent((jsms));
+
+
+      notify(utf8ms);
+
+      try{
+         connection.send(utf8ms);
+      }catch(err){
+         notify("Login not sent");
+      }     
+   }else{
+      notify("Supply credentials");
+   }
+}
+
+decodeBinMessage = function(e){
+   return decodeURIComponent(escape(decodezzstring(e)));
+}
+var mt = {
+    RED : 0,
+    ALERT : 3,
+    MESSAGE : 4
+}
+
+processMessage = function(message){
+   var txt='';
+   try
+   {
+      var transformed = JSON.parse(message);
+      
+      switch (transformed[0]){
+         case 1:
+         case 2:
+         case mt.ALERT:
+            txt = "ALERT !!";
+         case mt.MESSAGE:
+            txt += transformed[1];
+            break; 
+         default:
+            txt = "Unknown packet";
+            break;
+      }
+   }catch(err){
+      txt="Error in decode packet";
+   }
+   notify(txt);
+}
+
+connection.onmessage = function(e){
+   var message ='';
+   if (typeof e.data == "string") {
+      message = decodeBinMessage(e);
+   } else {
+      message = decodeBinMessage(e);
+   }
+   if (message != '' ){
+      processMessage(message);
+   }
 }
 connection.onopen = function(){
    /*Send a small message to the console once the connection is established */
    console.log('Connection open!');
-
-   var message = {
-   'name': 'bill murray'
-   };
-   connection.send(JSON.stringify(message));
+   dologin({"user":"BIGLONGUSERNAME","pass":"USERONE"});
 }
 </script>
+<div id="messages"></div>

@@ -17,6 +17,3 @@ class BaseScript():
         pass
     def __del__(self):
         print "DEREWARARWR"
-    def fill(self, other):
-        print "mid yum"
-        self.value= other.value +1

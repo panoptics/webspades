@@ -19,15 +19,10 @@ class BaseSimulation():
     conn     = None
     loop     = None
     freq     = 0.0
-    pertick  = 4 
+    pertick  = 3 
     simulants= Set()
     entities = weakref.WeakValueDictionary()
 
-    def setConnection(self, reactor, protocol, server, conn):
-        self.reactor = reactor
-        self.protocol = protocol
-        self.server = server
-        self.conn = conn
     def __init__(self, reactor, protocol, server, conn, freq = 0.2 ):
         self.reactor = reactor
         self.protocol = protocol
@@ -43,7 +38,8 @@ class BaseSimulation():
             self.entities[c].doTick()
 
     def tick(self):
-        inter = 1.0/float(self.pertick)
+        print "simtick"
+        inter = self.freq/float(self.pertick)
         ntime = math.floor(self.reactor.seconds())
         for x in range(1,self.pertick+1):
             self.reactor.callLater(ntime-self.reactor.seconds()+(float(x)*inter), self.op)
@@ -54,8 +50,7 @@ class BaseSimulation():
         """ wait for next sim tick to start sim"""
         self.loop.start(self.freq, now = False)
 
-    def start(self, freq ):
-        self.freq = freq
+    def start(self):
         """ Start the looping call ON the next second 
         (at least as close as possible)"""
         if self.loop == None:

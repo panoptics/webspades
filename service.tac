@@ -1,3 +1,4 @@
+# -*- coding: iso-8859-1 -*-
 """ sim runs independantly of network """
 __all__ = ["perf_counter"]
 
@@ -99,10 +100,10 @@ def getWebService():
     reactor.seconds = perf_counter
     factory1.protocol.reactor = reactor
 
-    conn.setConnection(reactor, factory1.protocol, server)
-    sim.setConnection(reactor, factory1.protocol, server, conn)
-
-    sim.start(1.0)
+    conn.__init__(reactor, factory1.protocol, server)
+    sim.__init__(reactor, factory1.protocol, server, conn, 5.0)
+    sim.onConnectionCallback = conn.onConnectCallback
+    sim.start()
     return server
 
 application = service.Application("webspades")
@@ -156,3 +157,6 @@ cr = reloader.CodeReloader(mode=reloader.MODE_OVERWRITE, callback=conn.CB )
 
 
 scriptDirectory = cr.AddDirectory("scripts", scriptDirPath)
+import binascii
+print int(binascii.hexlify(unicode("a" ).encode("utf-8")), 16)
+print "done"

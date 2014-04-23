@@ -14,5 +14,5 @@ class BottomClass(BaseScript, BaseScriptEntity):
         print self.position
         BaseScript.doTick(self)
    
-bot = BottomClass("BOTTOM1")            
+bot = BottomClass("BOTTOM1")             
  

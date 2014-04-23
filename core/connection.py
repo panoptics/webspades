@@ -26,12 +26,6 @@ class BaseConnection():
         self.protocol = protocol
         self.server = server
 
-    def setConnection(self, reactor, protocol, server):
-        print "Connex set"
-        self.reactor = reactor
-        self.protocol = protocol
-        self.server = server
-
     def CB(self, caller):
         print caller
         pass
@@ -48,8 +42,9 @@ class BaseConnection():
         print("onConnectCallback")
 
     def update(self):
-        for c in self.connections:
-            self.connections[c].doTick()
+        #for c in self.connections:
+        #   self.connections[c].doTick()
+        pass
 
     def onDisConnectCallback(self, client):
         print "REMOVE CLIENT"
@@ -58,7 +53,7 @@ class BaseConnection():
 
     def register(self, other):
         self.onConnectCallback(other)
-        
+
 class Connection(BaseConnection):
     def __init__(self, reactor, protocol, server):
         BaseConnection.__init__(self, reactor, protocol, server)
