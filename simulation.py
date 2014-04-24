@@ -38,7 +38,6 @@ class BaseSimulation():
             self.entities[c].doTick()
 
     def tick(self):
-        print "simtick"
         inter = self.freq/float(self.pertick)
         ntime = math.floor(self.reactor.seconds())
         now = self.reactor.seconds()
