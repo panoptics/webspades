@@ -1,116 +1,108 @@
+<html>
+
+<head>
+<title>websock</title>
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+<script type="text/javascript" src="./varint/encode.js"></script>
+<script type="text/javascript" src="./varint/decode.js"></script>
+<script type="text/javascript" src="./varint/zzcode.js"></script>
+<script type="text/javascript" src="./util.js"></script>
+<script type="text/javascript" src="./pf.js"></script>
+</head>
+<body>
+<div id="worker_result"></div>
+<div id="messages"></div>
 <script>
+<!-- poly fill --!>
+doPF();
+var worker = new Worker('task.js');
+
 var connection = null;
 if ('WebSocket' in window){
-   /* WebSocket is supported. You can proceed with your code*/
-//sheltered-meadow-7230.herokuapp.com:
-	connection = new WebSocket('ws://192.168.0.6:8080/ws',["pi","po"]);
-   connection.binaryType = "arraybuffer";
+     /* WebSocket is supported. You can proceed with your code*/
+  //sheltered-meadow-7230.herokuapp.com:
+  connection = new WebSocket('ws://192.168.0.6:8080/ws',["pi","po"]);
+  connection.binaryType = "arraybuffer";
+
 } else {
 }
-zzencode = function(n){
-   return (n << 1) ^ (n >> 31);
-}
-zzdecode = function(n){
-   return ((n >> 1) ^ (-(n & 1)));
-}
-decodezzstring = function(e){
-   var arr = new Uint8Array(e.data);
-   var hex='';
-   for (var i = 0; i < arr.length && i<2048; i++) {
-      hex += String.fromCharCode(zzdecode(arr[i]));
-   }
-   return hex;
-}
-encodezzstring = function(a){
-   var hex='';
-   for (var i = 0; i < a.length && i<2048; i++) {
-      hex += (zzencode(a[i]));
-   }
-   return hex;
-}
-$ = function(id){
-   return document.getElementById(id);
-}
-$C = function(id){
-   return document.createElement(id);
-}
-$CT = function(id){
-   return document.createTextNode(id);
-}
+
 notify = function(txt){
-   var txtNode = $CT(txt);
-   var br = $C('br');
-   var mdiv = $('messages');
-   mdiv.appendChild(txtNode);
-   mdiv.appendChild(br);
+  var txtNode = $CT(txt);
+  var br = $C('br');
+  var mdiv = $('messages');
+  mdiv.appendChild(txtNode);
+  mdiv.appendChild(br);
 }
+
+worker.addEventListener('message', function(e) {
+  console.log(e.data);
+   notify( (e.data) );
+}, false);
+
 dologin = function(message){
-   if ( message.pass && message.user ){
+ if ( message.p && message.u ){
 
-      var jsms = JSON.stringify(message);
-      var utf8ms = encodeURIComponent((jsms));
+    var jsms = (JSON.stringify(message));
+    var buffer = new Uint8Array(jsms.length);
+    var dv = new DataView(buffer.buffer);
+    var op =''
+    for (var i=0;i<jsms.length;i++){
+      var c = (jsms[i].charCodeAt(0));
+      dv.setUint8(i, c , true);
+      op+= String.fromCharCode( zzencode(c));
+    }
+    var en ='';
+    for (var i=0;i<jsms.length/4;i++){
+     
+      en += (encode(dv.getUint32(i*4, true)));
+    }
+    notify(en.length + " :en: " +en);
 
+    var et = '';
 
-      notify(utf8ms);
+    for (var i=0;i<jsms.length;i++){
+      et += String.fromCharCode((dv.getUint8(i,true)));
+    }
+    notify(encodeURIComponent(et).length + " :et: " + encodeURIComponent(et));
 
-      try{
-         connection.send(utf8ms);
-      }catch(err){
-         notify("Login not sent");
-      }     
-   }else{
-      notify("Supply credentials");
-   }
+    notify(op.length + " :op: " +op);
+    var escpd =encodeURIComponent(escape(encodezzstring(jsms)));
+    notify(escpd.length + " :escpd: " + escpd);
+
+    var unescpd =decodezzstring(op);
+    notify(unescpd.length + " :unescpd: " + unescpd);
+
+    notify( jsms.length + " :jsms: " +jsms);
+    try{
+       connection.send(dv.buffer);
+    }catch(err){
+       notify("Login not sent");
+    }     
+ }else{
+    notify("Supply credentials");
+ }
 }
 
-decodeBinMessage = function(e){
-   return decodeURIComponent(escape(decodezzstring(e)));
-}
-var mt = {
-    RED : 0,
-    ALERT : 3,
-    MESSAGE : 4
-}
 
-processMessage = function(message){
-   var txt='';
-   try
-   {
-      var transformed = JSON.parse(message);
-      
-      switch (transformed[0]){
-         case 1:
-         case 2:
-         case mt.ALERT:
-            txt = "ALERT !!";
-         case mt.MESSAGE:
-            txt += transformed[1];
-            break; 
-         default:
-            txt = "Unknown packet";
-            break;
-      }
-   }catch(err){
-      txt="Error in decode packet";
-   }
-   notify(txt);
-}
+
 
 connection.onmessage = function(e){
+
+
    var message ='';
    if (typeof e.data == "string") {
-      message = decodeBinMessage(e);
+
    } else {
-      message = decodeBinMessage(e);
+      worker.postMessage( {'cmd':ct.PROCESS,'msg': e.data}  );
    }
-   if (message != '' ){
-      processMessage(message);
-   }
+
 }
 connection.onopen = function(){
    /*Send a small message to the console once the connection is established */
    console.log('Connection open!');
-   dologin({"user":"BIGLONGUSERNAME","pass":"USERONE"});
+   dologin({'p':78986,'u':5678,'v':[0,0,0]});
 }
 </script>
-<div id="messages"></div>
+</body>
+</html>

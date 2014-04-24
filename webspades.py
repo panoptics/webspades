@@ -99,7 +99,7 @@ class WebSpadesProtocol(WebSocketServerProtocol):
     def runEverySecond(self):
         self.lastping = self.reactor.seconds()
         self.sendPing()
-        txt = "hello this is much better"
+        txt = "hello this is<b>sdasd</b> much better"
         mess, binver = self.zzencode(txt)
         tosend = self.encodeMessage(mess)   
 
@@ -110,13 +110,6 @@ class WebSpadesProtocol(WebSocketServerProtocol):
         mess, binver = self.zzencode(s)
         self.sendMessage(mess, True)
 
-        io2 = StringIO()
-        json.dump([3,txt], io2)
-        s = io2.getvalue()
-        mess, binver = self.zzencode(s)
-
-        self.sendMessage(mess, True)
-
         self.numberRequests+=1
 
     def onMessage(self, payload, isBinary):
@@ -124,11 +117,12 @@ class WebSpadesProtocol(WebSocketServerProtocol):
 
 
         try:
-            json_object = json.loads(urllib.unquote(payload))
+            json_object = json.loads(urllib.unquote((payload)))
+            print str(isBinary) + str(json_object)
+
         except ValueError, e:
-            print "INVALOID " + payload[0]
-        else:
-            print json_object
+            print "INVALID PLOAD :" + str(isBinary) + "  " + (payload)
+
 
         #print "RECVD:" + str(len(self.messages)) 
         return 

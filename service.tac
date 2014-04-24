@@ -16,6 +16,8 @@ from autobahn.twisted.choosereactor import install_reactor
 from autobahn.twisted.websocket import WebSocketServerFactory, \
                                        WebSocketServerProtocol
 from autobahn.twisted.resource import WebSocketResource
+from twisted.manhole import telnet
+
 from webspades import WebSpadesServerFactory,WebSpadesProtocol
 from simulation import sim
 from livecoding import reloader, namespace
@@ -82,6 +84,8 @@ perf_counter.use_performance_counter = (os.name == 'nt')
 perf_counter.use_monotonic = hasattr(time, 'monotonic')
 perf_counter.use_raw_monotonic = (perf_counter.use_monotonic == False)
 
+from twisted.conch import manhole_tap
+
 
 def getWebService():
     #reactor = install_reactor()
@@ -98,6 +102,7 @@ def getWebService():
     site = Site(root)
     server = reactor.listenTCP(port, site)
     reactor.seconds = perf_counter
+
     factory1.protocol.reactor = reactor
 
     conn.__init__(reactor, factory1.protocol, server)
@@ -107,13 +112,20 @@ def getWebService():
     return server
 
 application = service.Application("webspades")
-
+manhole_tap.makeService({"telnetPort": "tcp:6023",
+                         "sshPort": "tcp:6022",
+                         "namespace": {"foo": "bar"},
+                         "passwd": "passwd"}).setServiceParent(application)
+                         
 #logfile = DailyLogFile("webspades.log", "/tmp")
 #application.setComponent(ILogObserver, FileLogObserver(logfile).emit)
 
 # attach the service to its parent application
 service = getWebService()
 #service.setServiceParent(application)
+
+
+
 
 
 def loadScripts():
@@ -157,6 +169,3 @@ cr = reloader.CodeReloader(mode=reloader.MODE_OVERWRITE, callback=conn.CB )
 
 
 scriptDirectory = cr.AddDirectory("scripts", scriptDirPath)
-import binascii
-print int(binascii.hexlify(unicode("a" ).encode("utf-8")), 16)
-print "done"
