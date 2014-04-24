@@ -41,8 +41,9 @@ class BaseSimulation():
         print "simtick"
         inter = self.freq/float(self.pertick)
         ntime = math.floor(self.reactor.seconds())
+        now = self.reactor.seconds()
         for x in range(1,self.pertick+1):
-            self.reactor.callLater(ntime-self.reactor.seconds()+(float(x)*inter), self.op)
+            self.reactor.callLater(ntime-now+(float(x)*inter), self.op)
         self.tticks+=1
 
     def enactSim(self):
