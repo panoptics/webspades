@@ -1,7 +1,7 @@
-var MAX_BUFFER = 3;
-$ = function(id){return document.getElementById(id);}
-$C = function(id){return document.createElement(id);}
-$CT = function(id){return document.createTextNode(id);}
+var MAX_BUFFER = 1024
+$ = function(id){return document.getElementById(id)}
+$C = function(id){return document.createElement(id)}
+$CT = function(id){return document.createTextNode(id)}
 var mt = {
     RED : 0,
     ALERT : 3,
@@ -19,13 +19,13 @@ var tagOrComment = new RegExp(
     + '|/?[a-z]'
     + tagBody
     + ')>',
-    'gi');
+    'gi')
 
 function removeTags(html) {
   var oldHtml;
   do {
-    oldHtml = html;
-    html = html.replace(tagOrComment, '');
+    oldHtml = html
+    html = html.replace(tagOrComment, '')
   } while (html !== oldHtml);
-  return html.replace(/</g, '&lt;');
+  return html.replace(/</g, '&lt;')
 }

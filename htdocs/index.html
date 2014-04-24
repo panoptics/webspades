@@ -1,108 +1,16 @@
 <html>
-
 <head>
 <title>websock</title>
 <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
 <script type="text/javascript" src="./varint/encode.js"></script>
 <script type="text/javascript" src="./varint/decode.js"></script>
 <script type="text/javascript" src="./varint/zzcode.js"></script>
+<script type="text/javascript" src="./comms.js"></script>
 <script type="text/javascript" src="./util.js"></script>
 <script type="text/javascript" src="./pf.js"></script>
 </head>
-<body>
+<body onLoad="">
 <div id="worker_result"></div>
 <div id="messages"></div>
-<script>
-<!-- poly fill --!>
-doPF();
-var worker = new Worker('task.js');
-
-var connection = null;
-if ('WebSocket' in window){
-     /* WebSocket is supported. You can proceed with your code*/
-  //sheltered-meadow-7230.herokuapp.com:
-  connection = new WebSocket('ws://192.168.0.6:8080/ws',["pi","po"]);
-  connection.binaryType = "arraybuffer";
-
-} else {
-}
-
-notify = function(txt){
-  var txtNode = $CT(txt);
-  var br = $C('br');
-  var mdiv = $('messages');
-  mdiv.appendChild(txtNode);
-  mdiv.appendChild(br);
-}
-
-worker.addEventListener('message', function(e) {
-  console.log(e.data);
-   notify( (e.data) );
-}, false);
-
-dologin = function(message){
- if ( message.p && message.u ){
-
-    var jsms = (JSON.stringify(message));
-    var buffer = new Uint8Array(jsms.length);
-    var dv = new DataView(buffer.buffer);
-    var op =''
-    for (var i=0;i<jsms.length;i++){
-      var c = (jsms[i].charCodeAt(0));
-      dv.setUint8(i, c , true);
-      op+= String.fromCharCode( zzencode(c));
-    }
-    var en ='';
-    for (var i=0;i<jsms.length/4;i++){
-     
-      en += (encode(dv.getUint32(i*4, true)));
-    }
-    notify(en.length + " :en: " +en);
-
-    var et = '';
-
-    for (var i=0;i<jsms.length;i++){
-      et += String.fromCharCode((dv.getUint8(i,true)));
-    }
-    notify(encodeURIComponent(et).length + " :et: " + encodeURIComponent(et));
-
-    notify(op.length + " :op: " +op);
-    var escpd =encodeURIComponent(escape(encodezzstring(jsms)));
-    notify(escpd.length + " :escpd: " + escpd);
-
-    var unescpd =decodezzstring(op);
-    notify(unescpd.length + " :unescpd: " + unescpd);
-
-    notify( jsms.length + " :jsms: " +jsms);
-    try{
-       connection.send(dv.buffer);
-    }catch(err){
-       notify("Login not sent");
-    }     
- }else{
-    notify("Supply credentials");
- }
-}
-
-
-
-
-connection.onmessage = function(e){
-
-
-   var message ='';
-   if (typeof e.data == "string") {
-
-   } else {
-      worker.postMessage( {'cmd':ct.PROCESS,'msg': e.data}  );
-   }
-
-}
-connection.onopen = function(){
-   /*Send a small message to the console once the connection is established */
-   console.log('Connection open!');
-   dologin({'p':78986,'u':5678,'v':[0,0,0]});
-}
-</script>
 </body>
 </html>

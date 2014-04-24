@@ -112,16 +112,19 @@ def getWebService():
     return server
 
 application = service.Application("webspades")
-manhole_tap.makeService({"telnetPort": "tcp:6023",
-                         "sshPort": "tcp:6022",
-                         "namespace": {"foo": "bar"},
-                         "passwd": "passwd"}).setServiceParent(application)
-                         
+
 #logfile = DailyLogFile("webspades.log", "/tmp")
 #application.setComponent(ILogObserver, FileLogObserver(logfile).emit)
 
 # attach the service to its parent application
 service = getWebService()
+manhole_tap.makeService({"telnetPort": "tcp:6023",
+                         "sshPort": "tcp:6022",
+                         "namespace": {"application":  service, "conn": conn},
+                         "passwd": "users.txt"}).setServiceParent(application)
+manhole_tap.username = 'mike'
+manhole_tap.password = 'pass'
+
 #service.setServiceParent(application)
 
 

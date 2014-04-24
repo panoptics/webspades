@@ -1,5 +1,6 @@
-importScripts('varint/zzcode.js');
+importScripts('./varint/zzcode.js');
 importScripts('./util.js');
+ var global = (function(){ return this || (1,eval)('this') })();
 var oversize=0;
 self.decodeBinMessage = function(e){
     /!-- Sanitize here --!/
@@ -11,7 +12,7 @@ self.decodeBinMessage = function(e){
     var op =''
     for (var i=0;i<b.length;i++){
       var c = dv.getUint8(i, true);
-      op+= String.fromCharCode( zzdecode(c) );
+      op+= String.fromCharCode( global.zz.zzdecode(c) );
     }
 
     return decodeURIComponent(escape(removeTags(op)));

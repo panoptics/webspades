@@ -6,17 +6,17 @@ function decode(buf, offset) {
     , offset = offset || 0
     , shift  = 0
     , counter = offset
-    , b;
+    , b
   
   do {
     b = buf[counter++];
     res += shift < 28
       ? (b & REST) << shift
-      : (b & REST) * Math.pow(2, shift);
-    shift += 7;
+      : (b & REST) * Math.pow(2, shift)
+    shift += 7
   } while (b >= MSB)
   
   decode.bytesRead = counter - offset;
   
-  return res;
+  return res
 }
