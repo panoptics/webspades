@@ -10,6 +10,7 @@ var mt = {
 var ct = {
     PROCESS : 1
 }
+chr = function(a){ return String.fromCharCode(a) }
 var tagBody = '(?:[^"\'>]|"[^"]*"|\'[^\']*\')*';
 var tagOrComment = new RegExp(
     '<(?:'
@@ -29,3 +30,5 @@ function removeTags(html) {
   } while (html !== oldHtml);
   return html.replace(/</g, '&lt;')
 }
+
+

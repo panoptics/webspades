@@ -106,7 +106,7 @@ def getWebService():
     factory1.protocol.reactor = reactor
 
     conn.__init__(reactor, factory1.protocol, server)
-    sim.__init__(reactor, factory1.protocol, server, conn, 5.0)
+    sim.__init__(reactor, factory1.protocol, server, conn, 1.0)
     sim.onConnectionCallback = conn.onConnectCallback
     sim.start()
     return server

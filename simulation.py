@@ -19,7 +19,7 @@ class BaseSimulation():
     conn     = None
     loop     = None
     freq     = 0.0
-    pertick  = 3 
+    pertick  = 10 
     simulants= Set()
     entities = weakref.WeakValueDictionary()
 

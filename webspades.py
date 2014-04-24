@@ -82,8 +82,6 @@ class WebSpadesProtocol(WebSocketServerProtocol):
         #a = self.onConnectCallback(self)
     def onOpen(self):
         self.client_id = str( hashlib.sha224(str(self)).hexdigest())
-        print self.client_id
-        print "****************"
         l = task.LoopingCall(self.runEverySecond)
         l.start(5.0)
 

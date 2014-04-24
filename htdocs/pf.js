@@ -21,7 +21,7 @@ pollyFill = function(){
             prf = ((q + u) in c) ? (q) : prf
         }
         prf = (prp in c) ? prp : undefined;
-        return (prf) ? prf.toLowerCase() : "--" + prp
+        return (prf) ? "+" + prf.toLowerCase() : "-" + prp
     }
     // Localstore set/del test
     function lsTest(){
@@ -36,10 +36,11 @@ pollyFill = function(){
     }
 
     function doPF(){
-        var w = window, d = document
+        var w = window, d = document, tres = []
         $C = function(id){return d.createElement(id)}
-        
-        var tres = [
+
+        tres.push(
+            (igP('localStorage',window)?(lsTest()?'+':'-'):'-')+'localstorage',
             (gP('hidden', d)),
             (gP('transform', $C('div').style)),
             (gP('transition', $C('div').style)),
@@ -48,20 +49,14 @@ pollyFill = function(){
             (gP('Worker', w)),
             (gP('requestAnimationFrame', w)),
             (gP('WebGLRenderingContext', w))
-        ]
-        for (var t in tres){
-            //console.log(tres[t])
-        }
+        )
 
-        if (igP('localStorage', window) ){
-            if(lsTest() === true){
-                console.log("localStorage")
-            }else{
-                console.log("localStorage OFF")
-            }
+        for (var t in tres){
+            console.log(tres[t])
         }
         return tres
     }
     return doPF()
 }
 self.pollyFill()
+self.pollyFill = null;
