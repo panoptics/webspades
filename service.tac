@@ -122,7 +122,7 @@ manhole_tap.makeService({"telnetPort": "tcp:6023",
                          "sshPort": "tcp:6022",
                          "namespace": {"application":  service, "conn": conn},
                          "passwd": "users.txt"}).setServiceParent(application)
-manhole_tap.username = 'mike'
+manhole_tap.username = 'admin'
 manhole_tap.password = 'pass'
 
 #service.setServiceParent(application)
